@@ -7,10 +7,11 @@ import TableViewIcon from "@mui/icons-material/TableView";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 
 const links = [
-  { name: "Tables", href: "/", icon: TableViewIcon },
+  { name: "Tables Server", href: "/", icon: TableViewIcon },
+  { name: "Tables Client", href: "/table-client", icon: TableViewIcon },
   {
-    name: "Forms",
-    href: "/forms",
+    name: "Form",
+    href: "/form",
     icon: ListAltIcon,
   },
 ];
