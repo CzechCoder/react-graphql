@@ -32,6 +32,8 @@ export default function TableClient() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
+  console.log(error);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading users.</p>;
 
