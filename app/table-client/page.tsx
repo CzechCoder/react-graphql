@@ -47,7 +47,7 @@ export default function TableClient() {
         ))}
       </div>
       <Divider />
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <input
           className="border p-2 mr-2"
           placeholder="Name"
@@ -71,7 +71,7 @@ export default function TableClient() {
         >
           Add User
         </button>
-      </div>
+      </div> */}
     </main>
   );
 }
