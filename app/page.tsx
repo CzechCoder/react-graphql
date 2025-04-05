@@ -19,7 +19,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col px-0 md:px-1 py-6 gap-4 w-full text-left">
-      <h1>Users List Server Component</h1>
+      <h1>Users List Server Component (not implemented yet)</h1>
       {/* {data?.users.map((user: any) => (
         <p key={user.id}>
           {user.name} ({user.email})
