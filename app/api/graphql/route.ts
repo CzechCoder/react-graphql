@@ -1,5 +1,5 @@
 import { createYoga, createSchema } from "graphql-yoga";
-import { PrismaClient } from ".prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -23,15 +23,7 @@ const { handleRequest } = createYoga({
   `,
     resolvers: {
       Query: {
-        users: async () =>
-          await prisma.user.findMany({
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              city: true,
-            },
-          }),
+        users: async () => await prisma.user.findMany(),
       },
       Mutation: {
         createUser: async (
