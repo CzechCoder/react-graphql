@@ -1,20 +1,23 @@
 "use client";
 
 import { gql, useQuery, useMutation } from "@apollo/client";
-import client from "@/app/lib/apolloClient";
-import { useState } from "react";
-import { Divider } from "@mui/material";
+import {
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  FormGroup,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { ChangeEvent, useState } from "react";
 
-// GraphQL Queries
-const GET_USERS = gql`
-  query GetUsers {
-    users {
-      id
-      name
-      email
-    }
-  }
-`;
+import client from "@/app/lib/apolloClient";
 
 const CREATE_USER = gql`
   mutation CreateUser($name: String!, $email: String!) {
@@ -26,27 +29,127 @@ const CREATE_USER = gql`
   }
 `;
 
+interface User {
+  id: number;
+  name?: string;
+  email?: string;
+}
+
+function buildUserListQuery(fields: string[]) {
+  const fieldList = fields.join("\n");
+  return gql`
+    query GetUsers {
+      users {
+      id
+        ${fieldList}
+      }
+    }
+  `;
+}
+
 export default function TableClient() {
-  const { data, loading, error, refetch } = useQuery(GET_USERS, { client });
+  const [reqFields, setReqFields] = useState<{
+    fetchName: boolean;
+    fetchEmail: boolean;
+  }>({
+    fetchName: true,
+    fetchEmail: true,
+  });
   const [createUser] = useMutation(CREATE_USER, { client });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  console.log(error);
+  console.log(reqFields);
+
+  const fields = [
+    reqFields.fetchName && "name",
+    reqFields.fetchEmail && "email",
+  ].filter(Boolean) as string[];
+
+  const GET_USERS = buildUserListQuery(fields);
+  const { data, loading, error } = useQuery(GET_USERS, { client });
+
+  const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target);
+    setReqFields((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.checked ? true : false,
+    }));
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading users.</p>;
 
+  console.log(data);
+
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">GraphQL Users</h1>
-
+      <Typography
+        component="h3"
+        variant="h3"
+        className="text-2xl font-bold mb-4"
+      >
+        GraphQL Users
+      </Typography>
+      <Typography variant="body1">
+        Select which fields you want to filter out.
+      </Typography>
+      <FormGroup row>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={reqFields.fetchName}
+              onChange={handleCheck}
+              name="fetchName"
+            />
+          }
+          label="Name"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={reqFields.fetchEmail}
+              onChange={handleCheck}
+              name="fetchEmail"
+            />
+          }
+          label="Email"
+        />
+      </FormGroup>
       <div>
-        {data?.users.map((user: any) => (
-          <p key={user.id}>
-            {user.name} ({user.email})
-          </p>
-        ))}
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>User id</TableCell>
+                {reqFields.fetchName && (
+                  <TableCell align="right">Name</TableCell>
+                )}
+                {reqFields.fetchEmail && (
+                  <TableCell align="right">Email</TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.users.map((row: User) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  {reqFields.fetchName && (
+                    <TableCell align="right">{row.name}</TableCell>
+                  )}
+                  {reqFields.fetchEmail && (
+                    <TableCell align="right">{row.email}</TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
       <Divider />
       {/* <div className="mt-4">
