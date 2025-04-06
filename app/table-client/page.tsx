@@ -2,7 +2,9 @@
 
 import { gql, useQuery, useMutation } from "@apollo/client";
 import {
+  Box,
   Checkbox,
+  CircularProgress,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -15,16 +17,17 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 import client from "@/app/lib/apolloClient";
 
 const CREATE_USER = gql`
-  mutation CreateUser($name: String!, $email: String!) {
-    createUser(name: $name, email: $email) {
+  mutation CreateUser($name: String!, $email: String!, $city: String!) {
+    createUser(name: $name, email: $email, city: $city) {
       id
       name
       email
+      city
     }
   }
 `;
@@ -33,12 +36,13 @@ interface User {
   id: number;
   name?: string;
   email?: string;
+  city?: string;
 }
 
 function buildUserListQuery(fields: string[]) {
   const fieldList = fields.join("\n");
   return gql`
-    query GetUsers {
+    query GetAllUsers {
       users {
       id
         ${fieldList}
@@ -51,23 +55,29 @@ export default function TableClient() {
   const [reqFields, setReqFields] = useState<{
     fetchName: boolean;
     fetchEmail: boolean;
+    fetchCity: boolean;
   }>({
     fetchName: true,
     fetchEmail: true,
+    fetchCity: true,
   });
   const [createUser] = useMutation(CREATE_USER, { client });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  console.log(reqFields);
-
   const fields = [
     reqFields.fetchName && "name",
     reqFields.fetchEmail && "email",
+    reqFields.fetchCity && "city",
   ].filter(Boolean) as string[];
 
   const GET_USERS = buildUserListQuery(fields);
-  const { data, loading, error } = useQuery(GET_USERS, { client });
+  const { data, loading, error, refetch } = useQuery(GET_USERS, { client });
+
+  useEffect(() => {
+    console.log("refetching");
+    refetch();
+  }, [reqFields]);
 
   const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e.target);
@@ -77,10 +87,10 @@ export default function TableClient() {
     }));
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading users.</p>;
-
-  console.log(data);
+  if (error)
+    return (
+      <p>There was an error loading users. Please contact the administrator.</p>
+    );
 
   return (
     <main className="p-6">
@@ -91,8 +101,9 @@ export default function TableClient() {
       >
         GraphQL Users
       </Typography>
+      <Divider sx={{ my: 2 }} />
       <Typography variant="body1">
-        Select which fields you want to filter out.
+        Select which fields you want to filter out from the API query.
       </Typography>
       <FormGroup row>
         <FormControlLabel
@@ -115,43 +126,79 @@ export default function TableClient() {
           }
           label="Email"
         />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={reqFields.fetchCity}
+              onChange={handleCheck}
+              name="fetchCity"
+            />
+          }
+          label="City"
+        />
       </FormGroup>
+      <p>
+        Approx. size of the returned object:{" "}
+        {new Blob([JSON.stringify(data.users)]).size} bytes
+      </p>
       <div>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>User id</TableCell>
-                {reqFields.fetchName && (
-                  <TableCell align="right">Name</TableCell>
-                )}
-                {reqFields.fetchEmail && (
-                  <TableCell align="right">Email</TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.users.map((row: User) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
+        {loading ? (
+          <Box
+            display="flex"
+            flexDirection="column"
+            textAlign="center"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+            py={4}
+          >
+            <CircularProgress color="primary" />
+            <Typography variant="h5" color="primary">
+              Loading...
+            </Typography>
+          </Box>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>User id</TableCell>
                   {reqFields.fetchName && (
-                    <TableCell align="right">{row.name}</TableCell>
+                    <TableCell align="right">Name</TableCell>
                   )}
                   {reqFields.fetchEmail && (
-                    <TableCell align="right">{row.email}</TableCell>
+                    <TableCell align="right">Email</TableCell>
+                  )}
+                  {reqFields.fetchCity && (
+                    <TableCell align="right">City</TableCell>
                   )}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {data.users.map((row: User) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.id}
+                    </TableCell>
+                    {reqFields.fetchName && (
+                      <TableCell align="right">{row.name}</TableCell>
+                    )}
+                    {reqFields.fetchEmail && (
+                      <TableCell align="right">{row.email}</TableCell>
+                    )}
+                    {reqFields.fetchCity && (
+                      <TableCell align="right">{row.city || "Null"}</TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
-      <Divider />
       {/* <div className="mt-4">
         <input
           className="border p-2 mr-2"
