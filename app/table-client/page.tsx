@@ -137,10 +137,14 @@ export default function TableClient() {
           label="City"
         />
       </FormGroup>
-      <p>
-        Approx. size of the returned object:{" "}
-        {new Blob([JSON.stringify(data.users)]).size} bytes
-      </p>
+      {data ? (
+        <Typography variant="body1">
+          Approx. size of the returned object:{" "}
+          {new Blob([JSON.stringify(data.users)]).size} bytes
+        </Typography>
+      ) : (
+        <Typography variant="body1">Fetching data...</Typography>
+      )}
       <div>
         {loading ? (
           <Box
