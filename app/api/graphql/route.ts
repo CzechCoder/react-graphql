@@ -1,8 +1,8 @@
 import { createYoga, createSchema } from "graphql-yoga";
-// import { PrismaClient } from ".prisma/client";
+import { PrismaClient } from ".prisma/client";
 // NOTE Use the import below when pushing for production.
 // NOTE Vercel build can't find the client otherwise.
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

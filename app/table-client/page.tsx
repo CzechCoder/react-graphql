@@ -39,7 +39,7 @@ interface User {
   city?: string;
 }
 
-function buildUserListQuery(fields: string[]) {
+const buildUserListQuery = (fields: string[]) => {
   const fieldList = fields.join("\n");
   return gql`
     query GetAllUsers {
@@ -49,7 +49,7 @@ function buildUserListQuery(fields: string[]) {
       }
     }
   `;
-}
+};
 
 export default function TableClient() {
   const [reqFields, setReqFields] = useState<{
@@ -75,12 +75,10 @@ export default function TableClient() {
   const { data, loading, error, refetch } = useQuery(GET_USERS, { client });
 
   useEffect(() => {
-    console.log("refetching");
     refetch();
   }, [reqFields]);
 
   const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target);
     setReqFields((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.checked ? true : false,
@@ -99,7 +97,7 @@ export default function TableClient() {
         variant="h3"
         className="text-2xl font-bold mb-4"
       >
-        GraphQL Users
+        GraphQL Users - Client
       </Typography>
       <Divider sx={{ my: 2 }} />
       <Typography variant="body1">

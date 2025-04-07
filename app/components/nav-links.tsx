@@ -4,10 +4,11 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import TableViewIcon from "@mui/icons-material/TableView";
+import BackupTableIcon from "@mui/icons-material/BackupTable";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 
 const links = [
-  { name: "Table Server", href: "/", icon: TableViewIcon },
+  { name: "Table Server", href: "/", icon: BackupTableIcon },
   { name: "Table Client", href: "/table-client", icon: TableViewIcon },
   {
     name: "Form",
