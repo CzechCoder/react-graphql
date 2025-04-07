@@ -16,8 +16,11 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: { template: "%s | MUI Customization", default: "MUI Customization" },
-  description: "Showcase of restyled Material UI components.",
+  title: {
+    template: "%s | GraphQL Forms & Tables",
+    default: "GraphQL Forms & Tables",
+  },
+  description: "Showcase of GraphQL applied to forms and tables in Next.js.",
 };
 
 export const experimental_ppr = true;

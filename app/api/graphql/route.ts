@@ -1,8 +1,8 @@
 import { createYoga, createSchema } from "graphql-yoga";
-// import { PrismaClient } from ".prisma/client";
+import { PrismaClient } from ".prisma/client";
 // NOTE Use the import below when pushing for production.
 // NOTE Vercel build can't find the client otherwise.
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -20,20 +20,34 @@ const { handleRequest } = createYoga({
       users: [User]!
     }
 
+    type Query {
+      user(id: ID!): User
+    }
+
     type Mutation {
-      createUser(name: String!, email: String!, city: String!): User
+      updateUser(id: ID!, name: String!, email: String!, city: String!): User
     }
   `,
     resolvers: {
       Query: {
         users: async () => await prisma.user.findMany(),
+        user: async (_: any, { id }: { id: string }) =>
+          await prisma.user.findUnique({ where: { id: Number(id) } }),
       },
       Mutation: {
-        createUser: async (
+        updateUser: async (
           _: any,
-          { name, email, city }: { name: string; email: string; city: string }
+          {
+            id,
+            name,
+            email,
+            city,
+          }: { id: string; name: string; email: string; city: string }
         ) => {
-          return await prisma.user.create({ data: { name, email, city } });
+          return await prisma.user.update({
+            where: { id: Number(id) },
+            data: { name, email, city },
+          });
         },
       },
     },

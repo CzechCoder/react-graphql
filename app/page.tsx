@@ -56,7 +56,7 @@ export default async function Home(props: {
         variant="h3"
         className="text-2xl font-bold mb-4"
       >
-        GraphQL Users - SSR
+        GraphQL Users - Server
       </Typography>
       <Divider sx={{ my: 2 }} />
       <Typography variant="body1">

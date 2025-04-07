@@ -1,6 +1,6 @@
 "use client";
 
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import {
   Box,
   Checkbox,
@@ -20,24 +20,7 @@ import {
 import { ChangeEvent, useEffect, useState } from "react";
 
 import client from "@/app/lib/apolloClient";
-
-const CREATE_USER = gql`
-  mutation CreateUser($name: String!, $email: String!, $city: String!) {
-    createUser(name: $name, email: $email, city: $city) {
-      id
-      name
-      email
-      city
-    }
-  }
-`;
-
-interface User {
-  id: number;
-  name?: string;
-  email?: string;
-  city?: string;
-}
+import { User } from "../lib/types";
 
 const buildUserListQuery = (fields: string[]) => {
   const fieldList = fields.join("\n");
@@ -61,9 +44,6 @@ export default function TableClient() {
     fetchEmail: true,
     fetchCity: true,
   });
-  const [createUser] = useMutation(CREATE_USER, { client });
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
 
   const fields = [
     reqFields.fetchName && "name",
@@ -87,7 +67,12 @@ export default function TableClient() {
 
   if (error)
     return (
-      <p>There was an error loading users. Please contact the administrator.</p>
+      <div className="flex flex-col px-0 md:px-1 py-6 gap-4 w-full text-left">
+        <Typography variant="h4">
+          There was an error when fetching data in server table.
+        </Typography>
+        <Typography variant="h5">Please contact the administrator.</Typography>
+      </div>
     );
 
   return (
