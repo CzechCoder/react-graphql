@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
 
-import client from "@/app/lib/apolloClient";
+import client from "@/app/lib/apollo-client";
 import { User } from "../lib/types";
 
 const buildUserListQuery = (fields: string[]) => {

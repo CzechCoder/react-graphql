@@ -15,7 +15,7 @@ import {
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { FormEvent, useEffect, useState } from "react";
 
-import client from "@/app/lib/apolloClient";
+import client from "@/app/lib/apollo-client";
 import { User } from "@/app/lib/types";
 
 const GET_USERLIST = gql`

@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { gql } from "@apollo/client";
 
-import { getApolloClient } from "@/app/lib/apolloClientSSR";
+import { getApolloClient } from "@/app/lib/apollo-client-ssr";
 import { CheckboxSelector } from "@/app/components/checkbox-selector";
 
 interface User {
