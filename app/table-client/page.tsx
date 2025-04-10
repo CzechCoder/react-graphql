@@ -20,7 +20,7 @@ import {
 import { ChangeEvent, useEffect, useState } from "react";
 
 import client from "@/app/lib/apollo-client";
-import { User } from "../lib/types";
+import { User } from "@/app/lib/types";
 
 const buildUserListQuery = (fields: string[]) => {
   const fieldList = fields.join("\n");

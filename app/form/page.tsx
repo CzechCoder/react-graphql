@@ -11,10 +11,12 @@ import {
   MenuItem,
   Stack,
   CircularProgress,
+  AlertColor,
 } from "@mui/material";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { FormEvent, useEffect, useState } from "react";
 
+import { CustomSnackbar } from "@/app/components/snackbar";
 import client from "@/app/lib/apollo-client";
 import { User } from "@/app/lib/types";
 
@@ -56,6 +58,15 @@ const GET_USER = gql`
 
 export default function Home() {
   const [userId, setUserId] = useState<string>("1");
+  const [snackState, setSnackState] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: "",
+    severity: "success" as AlertColor,
+  });
 
   const [updateUser] = useMutation(UPDATE_USER, { client });
   const { data: userList } = useQuery(GET_USERLIST, { client });
@@ -92,9 +103,18 @@ export default function Home() {
       await updateUser({
         variables: { id: userId, ...formData },
       });
-      alert("User updated!");
+      setSnackState({
+        open: true,
+        message: "User data changed successfully.",
+        severity: "success",
+      });
     } catch (err) {
       console.error(err);
+      setSnackState({
+        open: true,
+        message: "Failed to update user.",
+        severity: "error",
+      });
     }
   };
 
@@ -199,6 +219,8 @@ export default function Home() {
           </Button>
         </Box>
       )}
+
+      <CustomSnackbar snackState={snackState} onClose={setSnackState} />
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import NavLinks from "@/app/components/nav-links";
 import { lusitana } from "@/app/ui/fonts";
 
